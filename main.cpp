@@ -1,5 +1,5 @@
 #include <iostream>
-#include "Header Files/Game.h"
+#include "src/Header Files/Game.h"
 
 int main() {
   Game OrderNChaos;
