@@ -30,8 +30,7 @@ void Game::dispIntro() {
 void Game::dispMenu() {
   std::cout << "1. Play Order and Chaos (2 players)" << std::endl;
   std::cout << "2. Scoreboard" << std::endl;
-  std::cout << "3. How to play Order and Chaos" << std::endl;
-  std::cout << "4. Quit" << std::endl;
+  std::cout << "3. Quit" << std::endl;
 
   std::cout << std::endl;
 }
@@ -65,29 +64,30 @@ void Game::gameOver() {
   std::cout << std::endl;
 }
 
-PlayerChoices Game::getPlayerChoices(Person player) {
+PlayerChoices Game::getPlayerChoices(Person& player, bool badChoice) {
   std::string choiceToken;
   std::string playerRole = player.getRole();
   playerRole[0] = toupper(playerRole[0]);
 
-  while (toupper(choiceToken[0]) != toupper('x') && toupper(choiceToken[0]) != toupper('o')) {
-    std::cout << player.getNickname() << " ("<< playerRole << ") choose the token (X or O): ";
-    std::cin >> choiceToken;
-    if (choiceToken.length() > 1 || (toupper(choiceToken[0]) != toupper('x') && toupper(choiceToken[0]) != toupper('o'))) {
-      this->screenClear();
-      std::cout << std::endl;
-      board.displayBoard();
-      std::cout << std::endl;
-      std::cout << "Please make sure you input the correct token (X or O)" << std::endl;
+  if (!badChoice) {
+    while (toupper(choiceToken[0]) != toupper('x') && toupper(choiceToken[0]) != toupper('o')) {
+      std::cout << player.getNickname() << " ("<< playerRole << ") choose the token (X or O): ";
+      std::cin >> choiceToken;
+      if (choiceToken.length() > 1 || (toupper(choiceToken[0]) != toupper('x') && toupper(choiceToken[0]) != toupper('o'))) {
+        this->screenClear();
+        std::cout << std::endl;
+        board.displayBoard();
+        std::cout << std::endl;
+        std::cout << "Please make sure you input the correct token (X or O)" << std::endl;
+      }
     }
+
+    choiceToken[0] = toupper(choiceToken[0]);
+    player.setToken(choiceToken);
+    this->displayBoard();
   }
 
-  choiceToken[0] = toupper(choiceToken[0]);
-
-  this->screenClear();
-  std::cout << std::endl;
-  board.displayBoard();
-  std::cout << std::endl;
+  choiceToken = player.getToken();
 
   int position = 0;
 
@@ -109,10 +109,18 @@ PlayerChoices Game::getPlayerChoices(Person player) {
 }
 
 void Game::createPlayers() {
+  playerList = new Person[2];
+
+  Person player1;
+  Person player2;
+
   this->screenClear();
   player1.dispSetNickname(1);
   this->screenClear();
   player2.dispSetNickname(2);
+
+  playerList[0] = player1;
+  playerList[1] = player2;
 }
 
 void Game::run() {
@@ -127,23 +135,28 @@ void Game::run() {
   if (choice == 1) {
     this->setRunning(true);
     this->createPlayers();
-  } else if (choice == 4) {
+  } else if (choice == 3) {
     this->gameOver();
   }
 
   while (this->isRunning()) {
     this->displayBoard();
 
-    PlayerChoices playerChoices = this->getPlayerChoices(player1);
+    for (int i = 0; i < 2; i++) {
+      PlayerChoices playerChoices = this->getPlayerChoices(playerList[i]);
+      bool updtStatus = board.update(playerChoices.position, playerChoices.token);
 
-    board.update(playerChoices.position, playerChoices.token);
+      while (updtStatus == false) {
+        this->displayBoard();
 
-    this->displayBoard();
+        std::cout << "Current choice (" << playerChoices.position << ") is occupied. Please choose another position..." << std::endl;
 
-    playerChoices = this->getPlayerChoices(player2);
+        playerChoices = this->getPlayerChoices(playerList[i], true);
+        updtStatus = board.update(playerChoices.position, playerChoices.token);
+      }
 
-    board.update(playerChoices.position, playerChoices.token);
-
+      this->displayBoard();
+    }
   }
 
 }

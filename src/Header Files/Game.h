@@ -9,15 +9,14 @@ class Game {
     bool running;
     Board board;
 
-    Person player1;
-    Person player2;
+    Person* playerList;
 
     void screenClear();
     void dispIntro();
     void dispMenu();
     int getMenuChoice();
     void createPlayers();
-    PlayerChoices getPlayerChoices(Person player);
+    PlayerChoices getPlayerChoices(Person& player, bool badChoice = false);
     void displayBoard();
     void gameOver();
   public:

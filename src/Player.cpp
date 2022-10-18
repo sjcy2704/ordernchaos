@@ -13,7 +13,7 @@ void Player::setNickname(std::string newNickname) {
   this->nickname = newNickname;
 }
 
-void Player::updtPoints() {
+void Player::incrementPoints() {
   this->points++;
 }
 

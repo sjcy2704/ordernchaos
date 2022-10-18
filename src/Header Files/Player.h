@@ -10,7 +10,7 @@ class Player {
     std::string currRole;
   public:
     Player();
-    void updtPoints();
+    void incrementPoints();
     std::string getNickname();
     void setToken(std::string token);
     void setRole(std::string role);

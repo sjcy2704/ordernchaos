@@ -25,6 +25,8 @@ void Person::dispSetNickname(int playerNum) {
   }
 
   std::cin >> nick;
+
+  nick[0] = toupper(nick[0]);
   this->setNickname(nick);
   this->setRole(role);
 }

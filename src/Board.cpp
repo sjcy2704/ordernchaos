@@ -84,10 +84,13 @@ void Board::displayBoard() {
 
 }
 
-void Board::update(int position, std::string token) {
-  if (position <= 36 && position >= 1) {
-    board[position] = token;
+bool Board::update(int position, std::string token) {
+  if (board[position] == "X" || board[position] == "O") {
+    return false;
   }
+
+  board[position] = token;
+  return true;
 }
 
 bool Board::checkWin() {

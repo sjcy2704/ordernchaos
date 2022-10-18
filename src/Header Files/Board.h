@@ -13,7 +13,7 @@ class Board {
     void create();
     void clear();
     void displayBoard();
-    void update(int position, std::string token);
+    bool update(int position, std::string token);
     bool checkWin();
     ~Board();
 };
