@@ -7,17 +7,22 @@ Board::Board() {
   }
 }
 
+/**
+ * @brief Reinitialise the empty board
+ *
+ */
 void Board::create() {
   for (int i = 1; i <= 36; i++) {
     board[i] = std::to_string(i);
   }
 }
 
-void Board::clear() {
-  board.empty();
-  this->create();
-}
-
+/**
+ * @brief Helper function to display the board
+ *
+ * @param currPos The current position of the board
+ * @param token The current token on the board
+ */
 void Board::dispBoardHelper(int currPos, std::string token) {
   if (currPos <= 9 || (token[0] == toupper('x') || token[0] == toupper('o'))) {
       if (currPos % 6 != 0) {
@@ -37,6 +42,19 @@ void Board::dispBoardHelper(int currPos, std::string token) {
     }
 }
 
+/**
+ * @brief Clear all the board
+ *
+ */
+void Board::clear() {
+  board.empty();
+  this->create();
+}
+
+/**
+* @brief Displays the board
+*
+*/
 void Board::displayBoard() {
   std::cout << "     _______________________________________________" << std::endl;
   std::cout << "    |       |       |       |       |       |       |" << std::endl;
@@ -84,6 +102,15 @@ void Board::displayBoard() {
 
 }
 
+/**
+ * @brief Updates the position given by the parameter position with the token given by the parameter token
+ *
+ * @param position The position in the board
+ * @param token The token to put in the board (X or O)
+ * @return true
+ * @return false
+ */
+
 bool Board::update(int position, std::string token) {
   if (board[position] == "X" || board[position] == "O") {
     return false;
@@ -93,6 +120,12 @@ bool Board::update(int position, std::string token) {
   return true;
 }
 
+/**
+ * @brief Iterates through the board to check if there are five tokens aligned
+ *
+ * @return true
+ * @return false
+ */
 bool Board::checkWin() {
   int directionsWin[4] = { 1, 6, 7, 5 };
   int counterCons = 0;
@@ -126,6 +159,12 @@ bool Board::checkWin() {
   return false;
 }
 
+/**
+ * @brief Check whether the board is full with tokens
+ *
+ * @return true
+ * @return false
+ */
 bool Board::full() {
   for (int i = 1; i <= 36; i++) {
     if (board[i] != "X" || board[i] != "O") {
@@ -136,7 +175,10 @@ bool Board::full() {
   return true;
 }
 
-
+/**
+ * @brief Save the current board into a text file
+ *
+ */
 void Board::saveMap() {
   std::ofstream boardMap("build/saveFolder/map.txt");
 
@@ -147,6 +189,10 @@ void Board::saveMap() {
   boardMap.close();
 }
 
+/**
+ * @brief Load the a saved board into the current board
+ *
+ */
 void Board::loadMap() {
   std::ifstream boardMap("build/saveFolder/map.txt");
 

@@ -4,10 +4,9 @@ Person::Person() {
   this->nickname = "";
 }
 
-Person::Person(std::string newNickname) {
-  this->nickname = newNickname;
-}
-
+/** @brief Displays a series of prompts to get the nickname of the player and their role
+* @param playerNum The player number
+*/
 void Person::dispSetNickname(int playerNum) {
   std::string nick;
   std::string role;
@@ -31,6 +30,9 @@ void Person::dispSetNickname(int playerNum) {
   this->setRole(role);
 }
 
+/** @brief Save the current player details into a text file
+* @param fileName The name of the file where the details will be saved
+*/
 void Person::savePlayer(std::string fileName) {
   std::ofstream playertxt("build/saveFolder/" + fileName);
 
@@ -41,6 +43,9 @@ void Person::savePlayer(std::string fileName) {
   playertxt.close();
 }
 
+/** @brief Load a saved player details from a text file
+* @param fileName The name of the file where the details are loading from
+*/
 void Person::loadPlayer(std::string fileName) {
   std::ifstream playertxt("build/saveFolder/" + fileName);
 
