@@ -3,6 +3,7 @@
 #include "Board.h"
 #include "Person.h"
 #include "Helpers.h"
+#include <vector>
 
 class Game {
   private:
@@ -11,9 +12,13 @@ class Game {
 
     Person* playerList;
 
+    Person* previousWinner;
+
     void screenClear();
     void dispIntro();
     void dispMenu();
+    void dispScoreboard();
+    void dispFinalScore();
     int getMenuChoice();
     void createPlayers();
     PlayerChoices getPlayerChoices(Person& player, bool badChoice = false);
@@ -21,6 +26,8 @@ class Game {
     bool checkWin();
     void dispOutro();
     void gameOver();
+
+    void changeRole();
   public:
     Game();
     void setRunning(bool value);

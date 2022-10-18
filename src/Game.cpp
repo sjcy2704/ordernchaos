@@ -56,12 +56,33 @@ int Game::getMenuChoice() {
   return choice;
 }
 
+void Game::dispScoreboard() {
+  std::cout << "      |   " << playerList[0].getNickname() << ":  " << playerList[0].getPoints() << "   v   " << playerList[1].getNickname() << ":  " << playerList[1].getPoints() << "   |" << std::endl;
+}
+
 void Game::gameOver() {
   this->screenClear();
+
+  std::cout << "*----------------------  F I N A L  S C O R E ----------------------*" << std::endl;
+
+  std::cout << std::endl;
+
+  std::cout << "        ";
+
+  this->dispScoreboard();
+
+  std::cout << std::endl;
 
   std::cout << "!-!-!-!-------  T H A N K  Y O U  F O R  P L A Y I N G  -------!-!-!-!" << std::endl;
 
   std::cout << std::endl;
+}
+
+void Game::changeRole() {
+  std::swap(playerList[0], playerList[1]);
+
+  playerList[0].setRole("order");
+  playerList[1].setRole("chaos");
 }
 
 PlayerChoices Game::getPlayerChoices(Person& player, bool badChoice) {
@@ -172,6 +193,7 @@ void Game::run() {
 }
 
 void Game::dispOutro() {
+
   int choice = 0;
 
   while (choice != 1 && choice != 2) {
@@ -195,15 +217,16 @@ void Game::dispOutro() {
 
   }
 
+  this->previousWinner->incrementPoints();
+
   if (choice == 2) {
     this->setRunning(false);
     this->gameOver();
-    //get final score
   } else {
+    this->changeRole();
     this->board.clear();
   }
 }
-
 
 bool Game::checkWin() {
   this->displayBoard();
@@ -212,12 +235,13 @@ bool Game::checkWin() {
     if (this->board.checkWin()) {
       if (this->playerList[i].getRole() == "order") {
         std::cout << "Congratulations " << this->playerList[i].getNickname() << " (Order), you've succeded to maintain everything in order and connected five in a row!!!" << std::endl;
-        this->playerList[i].incrementPoints();
         std::cout << std::endl;
+        previousWinner = &this->playerList[i];
         return true;
       }
     } else if (this->board.full() && !this->board.checkWin()) {
       std::cout << "Congratulations " << this->playerList[i].getNickname() << " (Chaos), you've successfully wreaked havoc and stopped Order from connecting five in a row!!!" << std::endl;
+      previousWinner = &this->playerList[i];
       std::cout << std::endl;
       return true;
     }
@@ -229,6 +253,8 @@ bool Game::isRunning() { return running; }
 
 void Game::displayBoard() {
   this->screenClear();
+
+  this->dispScoreboard();
 
   std::cout << std::endl;
 
