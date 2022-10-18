@@ -70,21 +70,20 @@ PlayerChoices Game::getPlayerChoices(Person& player, bool badChoice) {
   playerRole[0] = toupper(playerRole[0]);
 
   if (!badChoice) {
-    while (toupper(choiceToken[0]) != toupper('x') && toupper(choiceToken[0]) != toupper('o')) {
+    while (toupper(choiceToken[0]) != toupper('x') && toupper(choiceToken[0]) != toupper('o') || choiceToken.length() > 1) {
       std::cout << player.getNickname() << " ("<< playerRole << ") choose the token (X or O): ";
       std::cin >> choiceToken;
+
       if (choiceToken.length() > 1 || (toupper(choiceToken[0]) != toupper('x') && toupper(choiceToken[0]) != toupper('o'))) {
-        this->screenClear();
-        std::cout << std::endl;
-        board.displayBoard();
-        std::cout << std::endl;
+        this->displayBoard();
         std::cout << "Please make sure you input the correct token (X or O)" << std::endl;
+        std::cin.clear();
+        std::cin.ignore(256,'\n');
       }
     }
 
     choiceToken[0] = toupper(choiceToken[0]);
     player.setToken(choiceToken);
-    this->displayBoard();
   }
 
   choiceToken = player.getToken();
@@ -92,7 +91,7 @@ PlayerChoices Game::getPlayerChoices(Person& player, bool badChoice) {
   int position = 0;
 
   while (position < 1 || position > 36) {
-    std::cout << player.getNickname() << " ("<< playerRole << ") please choose a number between 1 and 36: ";
+    std::cout << player.getNickname() << " ("<< playerRole << ") please choose the number of the position you wish to put your token: ";
     std::cin >> position;
     if (std::cin.fail() || position < 1 || position > 36) {
       this->screenClear();
@@ -146,7 +145,7 @@ void Game::run() {
       PlayerChoices playerChoices = this->getPlayerChoices(playerList[i]);
       bool updtStatus = board.update(playerChoices.position, playerChoices.token);
 
-      while (updtStatus == false) {
+      while (!updtStatus) {
         this->displayBoard();
 
         std::cout << "Current choice (" << playerChoices.position << ") is occupied. Please choose another position..." << std::endl;
@@ -155,10 +154,75 @@ void Game::run() {
         updtStatus = board.update(playerChoices.position, playerChoices.token);
       }
 
+      if (this->board.checkWin()) {
+        break;
+      };
+
       this->displayBoard();
+
     }
+
+    bool currState = this->checkWin();
+
+    if (currState) {
+      this->dispOutro();
+    }
+
+  }
+}
+
+void Game::dispOutro() {
+  int choice = 0;
+
+  while (choice != 1 && choice != 2) {
+    std::cout << "Would you like to continue playing?" << std::endl;
+    std::cout << "1. Yes" << std::endl;
+    std::cout << "2. Quit" << std:: endl;
+
+    std::cout << std::endl;
+
+    std::cout << "Enter your choice: ";
+
+    std::cin >> choice;
+
+    if (std::cin.fail() || choice != 1 || choice != 2) {
+      this->checkWin();
+
+      std::cout << "Wrong input, please input a valid option..." << std::endl;
+      std::cin.clear();
+      std::cin.ignore(256,'\n');
+    }
+
   }
 
+  if (choice == 2) {
+    this->setRunning(false);
+    this->gameOver();
+    //get final score
+  } else {
+    this->board.clear();
+  }
+}
+
+
+bool Game::checkWin() {
+  this->displayBoard();
+
+  for (int i = 0; i < 2; i++) {
+    if (this->board.checkWin()) {
+      if (this->playerList[i].getRole() == "order") {
+        std::cout << "Congratulations " << this->playerList[i].getNickname() << " (Order), you've succeded to maintain everything in order and connected five in a row!!!" << std::endl;
+        this->playerList[i].incrementPoints();
+        std::cout << std::endl;
+        return true;
+      }
+    } else if (this->board.full() && !this->board.checkWin()) {
+      std::cout << "Congratulations " << this->playerList[i].getNickname() << " (Chaos), you've successfully wreaked havoc and stopped Order from connecting five in a row!!!" << std::endl;
+      std::cout << std::endl;
+      return true;
+    }
+  }
+  return false;
 }
 
 bool Game::isRunning() { return running; }
@@ -173,4 +237,6 @@ void Game::displayBoard() {
   std::cout << std::endl;
 }
 
-Game::~Game() {}
+Game::~Game() {
+  delete [] playerList;
+}

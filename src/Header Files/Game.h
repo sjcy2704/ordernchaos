@@ -18,6 +18,8 @@ class Game {
     void createPlayers();
     PlayerChoices getPlayerChoices(Person& player, bool badChoice = false);
     void displayBoard();
+    bool checkWin();
+    void dispOutro();
     void gameOver();
   public:
     Game();

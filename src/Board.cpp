@@ -97,23 +97,24 @@ bool Board::checkWin() {
   int directionsWin[4] = { 1, 6, 7, 5 };
   int counterCons = 0;
 
-  for (int pos = 1; pos <= 12; pos++) {
+  for (int pos = 1; pos <= 36; pos++) {
     int temp = pos;
-    if (board[temp] != "0") {
-      for (int direc = 0; direc < 4; direc++) {
-        for (int i = 0; i < 4; i++) {
-          if (board[temp] == board[temp+directionsWin[direc]]) {
-            counterCons++;
-          } else {
-            counterCons = 0;
-            break;
+    for (int direc = 0; direc < 4; direc++) {
+      for (int i = 0; i < 4; i++) {
+        if (board[temp] == board[temp+directionsWin[direc]]) {
+          counterCons++;
+          if (counterCons > 4) {
+            return true;
           }
-          temp += directionsWin[direc];
+        } else {
+          counterCons = 0;
+          break;
         }
+        temp += directionsWin[direc];
+      }
 
-        if (counterCons >= 4) {
-          return true;
-        }
+      if (counterCons >= 4) {
+        return true;
       }
     }
   }
@@ -123,6 +124,20 @@ bool Board::checkWin() {
   }
 
   return false;
+}
+
+// void checkH() {
+  
+// }
+
+bool Board::full() {
+  for (int i = 1; i <= 36; i++) {
+    if (board[i] != "X" || board[i] != "O") {
+      return false;
+    }
+  }
+
+  return true;
 }
 
 Board::~Board() {}
