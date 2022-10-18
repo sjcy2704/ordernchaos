@@ -198,9 +198,17 @@ void Game::run() {
 
   this->dispMenu();
 
-  this->getMenuChoice();
+  bool savedStatus = this->getSaveStatus();
 
-  this->askToSave();
+  int limit;
+
+  limit = savedStatus ? 3 : 2;
+
+  int mChoice = this->getMenuChoice();
+
+  if (mChoice != limit) {
+    this->askToSave();
+  }
 
   while (this->isRunning()) {
     this->displayBoard();
@@ -301,9 +309,16 @@ void Game::dispOutro() {
   if (choice == 2) {
     this->setRunning(false);
     this->gameOver();
+    if (this->autosave) {
+      this->clearSave();
+    }
   } else {
     this->changeRole();
     this->board.clear();
+
+    if (this->autosave) {
+      this->save();
+    }
   }
 }
 
@@ -335,9 +350,13 @@ void Game::displayBoard() {
 
   if (this->autosave) {
     std::cout << std::endl;
-    std::cout << "To exit with current game press key combo CTRL+C" << std::endl;
+    std::cout << "To exit with current saved game, press key combo CTRL+C" << std::endl;
+  } else {
     std::cout << std::endl;
+    std::cout << "To exit with current game, press key combo CTRL+C. WARNING: CURRENT GAME IS NOT SAVED" << std::endl;
   }
+
+  std::cout << std::endl;
 
   this->dispScoreboard();
 
@@ -390,7 +409,7 @@ void Game::save() {
 
 void Game::load() {
   std::ifstream savetxt("build/saveFolder/save.txt");
-  
+
   for(int i = 0; i < 2; i++) {
     savetxt >> this->turns;
   }
@@ -410,5 +429,4 @@ void Game::load() {
 }
 
 Game::~Game() {
-  delete [] playerList;
 }
