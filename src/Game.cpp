@@ -2,6 +2,8 @@
 
 Game::Game() {
   running = false;
+  autosave = false;
+  turns = 0;
 }
 
 void Game::setRunning(bool value) {
@@ -27,31 +29,77 @@ void Game::dispIntro() {
   std::cout << std::endl;
 }
 
+bool Game::getSaveStatus() {
+  bool savedStatus = false;
+
+  if (std::__fs::filesystem::exists("build/saveFolder")) {
+    std::ifstream savetxt("build/saveFolder/save.txt");
+
+    savetxt >> savedStatus;
+  }
+
+
+  return savedStatus;
+}
+
 void Game::dispMenu() {
-  std::cout << "1. Play Order and Chaos (2 players)" << std::endl;
-  std::cout << "2. Scoreboard" << std::endl;
-  std::cout << "3. Quit" << std::endl;
+  bool savedStatus = this->getSaveStatus();
+
+  if (savedStatus) {
+    std::cout << "1. Continue last game" << std::endl;
+    std::cout << "2. New Order and Chaos game" << std::endl;
+    std::cout << "3. Quit" << std::endl;
+  } else {
+    std::cout << "1. Play Order and Chaos (2 players)" << std::endl;
+    std::cout << "2. Quit" << std::endl;
+  }
 
   std::cout << std::endl;
 }
 
 int Game::getMenuChoice() {
-  int choice;
+  int choice = 0;
 
-  while (true) {
+  bool savedStatus = this->getSaveStatus();
+
+  int limit;
+
+  limit = savedStatus ? 3 : 2;
+
+  while (choice < 1 || choice > limit) {
     std::cout << "Choose your option: ";
     std::cin >> choice;
-    if (std::cin.fail() || choice < 1 || choice > 4) {
+    if (std::cin.fail() || choice < 1 || choice > limit) {
       this->screenClear();
       this->dispIntro();
       this->dispMenu();
       std::cout << "Wrong choice please input one of the options above..." << std::endl;
       std::cin.clear();
       std::cin.ignore(256,'\n');
-    } else {
-      break;
     }
   };
+
+  if (savedStatus) {
+    if (choice == 1) {
+      this->load();
+      this->setRunning(true);
+    } else if (choice == 2) {
+      this->clearSave();
+      this->setRunning(true);
+      this->createPlayers();
+      this->board.clear();
+    } else {
+      this->gameOver();
+    }
+  } else {
+    if (choice == 1) {
+      this->setRunning(true);
+      this->createPlayers();
+      this->board.clear();
+    } else {
+      this->gameOver();
+    }
+  }
 
   return choice;
 }
@@ -63,13 +111,15 @@ void Game::dispScoreboard() {
 void Game::gameOver() {
   this->screenClear();
 
-  std::cout << "*----------------------  F I N A L  S C O R E ----------------------*" << std::endl;
+  if (this->turns > 0) {
+    std::cout << "*----------------------  F I N A L  S C O R E ----------------------*" << std::endl;
 
-  std::cout << std::endl;
+    std::cout << std::endl;
 
-  std::cout << "        ";
+    std::cout << "        ";
 
-  this->dispScoreboard();
+    this->dispScoreboard();
+  }
 
   std::cout << std::endl;
 
@@ -116,9 +166,7 @@ PlayerChoices Game::getPlayerChoices(Person& player, bool badChoice) {
     std::cin >> position;
     if (std::cin.fail() || position < 1 || position > 36) {
       this->screenClear();
-      std::cout << std::endl;
-      board.displayBoard();
-      std::cout << std::endl;
+      this->displayBoard();
       std::cout << "Please enter a correct value i.e. a number between 1 and 36..." << std::endl;
       std::cin.clear();
       std::cin.ignore(256,'\n');
@@ -150,19 +198,19 @@ void Game::run() {
 
   this->dispMenu();
 
-  int choice = this->getMenuChoice();
+  this->getMenuChoice();
 
-  if (choice == 1) {
-    this->setRunning(true);
-    this->createPlayers();
-  } else if (choice == 3) {
-    this->gameOver();
-  }
+  this->askToSave();
 
   while (this->isRunning()) {
     this->displayBoard();
 
+    this->turns++;
+
     for (int i = 0; i < 2; i++) {
+      if (this->turns % 2 == 0) {
+        i++;
+      }
       PlayerChoices playerChoices = this->getPlayerChoices(playerList[i]);
       bool updtStatus = board.update(playerChoices.position, playerChoices.token);
 
@@ -173,6 +221,10 @@ void Game::run() {
 
         playerChoices = this->getPlayerChoices(playerList[i], true);
         updtStatus = board.update(playerChoices.position, playerChoices.token);
+      }
+
+      if (this->autosave) {
+        this->save();
       }
 
       if (this->board.checkWin()) {
@@ -189,6 +241,32 @@ void Game::run() {
       this->dispOutro();
     }
 
+  }
+}
+
+void Game::askToSave() {
+  this->screenClear();
+  int choice = 0;
+
+  while (choice != 1 && choice != 2) {
+    std::cout << "Would you like to auto-save the current game?" << std::endl;
+    std::cout << "1. Yes" << std::endl << "2. No" << std::endl;
+
+    std::cin >> choice;
+
+    if (std::cin.fail() || choice < 1 || choice > 2) {
+      std::cout << "Please enter a valid input..." << std::endl;
+      std::cout << std::endl;
+
+      std::cin.clear();
+      std::cin.ignore(256,'\n');
+    }
+  }
+
+  if (choice == 1) {
+    this->autosave = true;
+  } else {
+    this->clearSave();
   }
 }
 
@@ -254,6 +332,12 @@ bool Game::isRunning() { return running; }
 void Game::displayBoard() {
   this->screenClear();
 
+  if (this->autosave) {
+    std::cout << std::endl;
+    std::cout << "To exit with current game press key combo CTRL+C" << std::endl;
+    std::cout << std::endl;
+  }
+
   this->dispScoreboard();
 
   std::cout << std::endl;
@@ -261,6 +345,64 @@ void Game::displayBoard() {
   this->board.displayBoard();
 
   std::cout << std::endl;
+}
+
+void Game::clearSave() {
+  std::ofstream ofs;
+  ofs.open("build/saveFolder/map.txt", std::ofstream::out | std::ofstream::trunc);
+  ofs.close();
+
+  ofs.open("build/saveFolder/player0.txt", std::ofstream::out | std::ofstream::trunc);
+  ofs.close();
+
+  ofs.open("build/saveFolder/player1.txt", std::ofstream::out | std::ofstream::trunc);
+  ofs.close();
+
+  this->setSaveStatus(false);
+}
+
+void Game::setSaveStatus(bool value) {
+  std::ofstream savetxt("build/saveFolder/save.txt");
+
+  savetxt << value;
+  savetxt << this->turns;
+
+  savetxt.close();
+}
+
+void Game::save() {
+  if (!std::__fs::filesystem::exists("build/saveFolder")) {
+    system("mkdir build/saveFolder");
+  }
+
+  this->setSaveStatus(true);
+
+  this->board.saveMap();
+
+  for (int i = 0; i < 2; i++) {
+    playerList[i].savePlayer("player" + std::to_string(i) + ".txt");
+  }
+}
+
+void Game::load() {
+  std::ifstream savetxt("build/saveFolder/save.txt");
+  
+  for(int i = 0; i < 2; i++) {
+    savetxt >> this->turns;
+  }
+
+  this->board.loadMap();
+
+  playerList = new Person[2];
+
+  Person player1;
+  Person player2;
+
+  player1.loadPlayer("player0.txt");
+  player2.loadPlayer("player1.txt");
+
+  playerList[0] = player1;
+  playerList[1] = player2;
 }
 
 Game::~Game() {

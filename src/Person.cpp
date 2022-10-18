@@ -31,4 +31,30 @@ void Person::dispSetNickname(int playerNum) {
   this->setRole(role);
 }
 
+void Person::savePlayer(std::string fileName) {
+  std::ofstream playertxt("build/saveFolder/" + fileName);
+
+  playertxt << this->nickname << std::endl;
+  playertxt << this->currRole << std::endl;
+  playertxt << this->points << std::endl;
+
+  playertxt.close();
+}
+
+void Person::loadPlayer(std::string fileName) {
+  std::ifstream playertxt("build/saveFolder/" + fileName);
+
+  std::string container[3] = {};
+
+  for (int i = 0; i < 3; i++) {
+    playertxt >> container[i];
+  }
+
+  this->nickname = container[0];
+  this->currRole = container[1];
+  this->points = std::stoi(container[2]);
+
+  playertxt.close();
+}
+
 Person::~Person() {}

@@ -16,5 +16,8 @@ class Board {
     bool update(int position, std::string token);
     bool full();
     bool checkWin();
+
+    void saveMap();
+    void loadMap();
     ~Board();
 };

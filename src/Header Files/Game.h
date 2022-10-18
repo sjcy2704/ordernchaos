@@ -8,6 +8,8 @@
 class Game {
   private:
     bool running;
+    bool autosave;
+    int turns;
     Board board;
 
     Person* playerList;
@@ -26,8 +28,14 @@ class Game {
     bool checkWin();
     void dispOutro();
     void gameOver();
-
     void changeRole();
+
+    void askToSave();
+    void clearSave();
+    bool getSaveStatus();
+    void setSaveStatus(bool value);
+    void save();
+    void load();
   public:
     Game();
     void setRunning(bool value);

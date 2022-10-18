@@ -126,10 +126,6 @@ bool Board::checkWin() {
   return false;
 }
 
-// void checkH() {
-  
-// }
-
 bool Board::full() {
   for (int i = 1; i <= 36; i++) {
     if (board[i] != "X" || board[i] != "O") {
@@ -138,6 +134,30 @@ bool Board::full() {
   }
 
   return true;
+}
+
+
+void Board::saveMap() {
+  std::ofstream boardMap("build/saveFolder/map.txt");
+
+  for (auto pos : board) {
+    boardMap << pos.second << std::endl;
+  }
+
+  boardMap.close();
+}
+
+void Board::loadMap() {
+  std::ifstream boardMap("build/saveFolder/map.txt");
+
+  std::string token;
+
+  for (int i = 36; i >= 1; i--) {
+    boardMap >> token;
+    board[i] = token;
+  }
+
+  boardMap.close();
 }
 
 Board::~Board() {}
