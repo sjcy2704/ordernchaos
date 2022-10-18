@@ -265,6 +265,7 @@ void Game::askToSave() {
 
   if (choice == 1) {
     this->autosave = true;
+    this->save();
   } else {
     this->clearSave();
   }
@@ -358,14 +359,17 @@ void Game::clearSave() {
   ofs.open("build/saveFolder/player1.txt", std::ofstream::out | std::ofstream::trunc);
   ofs.close();
 
+  this->autosave = false;
   this->setSaveStatus(false);
 }
 
 void Game::setSaveStatus(bool value) {
   std::ofstream savetxt("build/saveFolder/save.txt");
 
-  savetxt << value;
-  savetxt << this->turns;
+  savetxt << value << std::endl;
+  if (this->autosave) {
+    savetxt << this->turns << std::endl;
+  }
 
   savetxt.close();
 }

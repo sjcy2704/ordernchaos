@@ -18,6 +18,8 @@ class Player {
     void setNickname(std::string newNickname);
     std::string getToken();
     int getPoints();
-    ~Player();
+    virtual void savePlayer(std::string fileName) = 0;
+    virtual void loadPlayer(std::string fileName) = 0;
+    virtual ~Player();
 
 };

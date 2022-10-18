@@ -11,5 +11,5 @@ class Person : public Player {
     void dispSetNickname(int playerNum);
     void savePlayer(std::string fileName);
     void loadPlayer(std::string fileName);
-    ~Person();
+    virtual ~Person();
 };
