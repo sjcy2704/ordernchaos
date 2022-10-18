@@ -1,6 +1,5 @@
-#include <iostream>
-#include <unordered_map>
 #include "Header Files/Board.h"
+#include "Header Files/Helpers.h"
 
 Board::Board() {
   for (int i = 1; i <= 36; i++) {
@@ -19,127 +18,69 @@ void Board::clear() {
   this->create();
 }
 
+void Board::dispBoardHelper(int currPos, std::string token) {
+  if (currPos <= 9 || (token[0] == toupper('x') || token[0] == toupper('o'))) {
+      if (currPos % 6 != 0) {
+        std::cout << "|   " << getTokenStyle(token) << "   ";
+      } else {
+        std::cout << "|   " << getTokenStyle(token) << "   |";
+      }
+    } else if (currPos > 9) {
+      if (currPos % 6 != 0) {
+        std::cout << "|   " << getTokenStyle(token) << "  ";
+      } else {
+        std::cout << "|   " << getTokenStyle(token) << "  |";
+      }
+    }
+    if (currPos%6 == 0) {
+      std::cout << std::endl << "";
+    }
+}
+
 void Board::displayBoard() {
-  std::cout <<"       |       |       |       |       |        " << std::endl;
+  std::cout << "     _______________________________________________" << std::endl;
+  std::cout << "    |       |       |       |       |       |       |" << std::endl;
+  std::cout << "    ";
+
   for (int i = 1; i <= 6; i++) {
-    if (i <= 9 || (board[i] == "x" || board[i] == "o")) {
-      if (i % 6 == 0) {
-        std::cout << "   " << board[i] << "   ";
-      } else {
-        std::cout << "   " << board[i] << "   |";
-      }
-    } else if (i > 9) {
-      if (i % 6 == 0) {
-        std::cout << "   " << board[i] << "  ";
-      } else {
-        std::cout << "   " << board[i] << "  |";
-      }
-    }
-    if (i%6 == 0) {
-      std::cout << std::endl;
-    }
+    this->dispBoardHelper(i, board[i]);
   }
-  std::cout <<"_______|_______|_______|_______|_______|_______" << std::endl;
-  std::cout <<"       |       |       |       |       |        " << std::endl;
+  std::cout << "    |_______|_______|_______|_______|_______|_______|" << std::endl;
+  std::cout << "    |       |       |       |       |       |       |" << std::endl;
+  std::cout << "    ";
+
   for (int i = 7; i <= 12; i++) {
-    if (i <= 9 || (board[i] == "x" || board[i] == "o")) {
-      if (i % 6 == 0) {
-        std::cout << "   " << board[i] << "   ";
-      } else {
-        std::cout << "   " << board[i] << "   |";
-      }
-    } else if (i > 9) {
-      if (i % 6 == 0) {
-        std::cout << "   " << board[i] << "  ";
-      } else {
-        std::cout << "   " << board[i] << "  |";
-      }
-    }
-    if (i%6 == 0) {
-      std::cout << std::endl;
-    }
+    this->dispBoardHelper(i, board[i]);
   }
-  std::cout <<"_______|_______|_______|_______|_______|_______" << std::endl;
-  std::cout <<"       |       |       |       |       |        " << std::endl;
+  std::cout << "    |_______|_______|_______|_______|_______|_______|" << std::endl;
+  std::cout << "    |       |       |       |       |       |       |" << std::endl;
+  std::cout << "    ";
+
   for (int i = 13; i <= 18; i++) {
-    if (i <= 9 || (board[i] == "x" || board[i] == "o")) {
-      if (i % 6 == 0) {
-        std::cout << "   " << board[i] << "   ";
-      } else {
-        std::cout << "   " << board[i] << "   |";
-      }
-    } else if (i > 9) {
-      if (i % 6 == 0) {
-        std::cout << "   " << board[i] << "  ";
-      } else {
-        std::cout << "   " << board[i] << "  |";
-      }
-    }
-    if (i%6 == 0) {
-      std::cout << std::endl;
-    }
+    this->dispBoardHelper(i, board[i]);
   }
-  std::cout <<"_______|_______|_______|_______|_______|_______" << std::endl;
-  std::cout <<"       |       |       |       |       |        " << std::endl;
+  std::cout << "    |_______|_______|_______|_______|_______|_______|" << std::endl;
+  std::cout << "    |       |       |       |       |       |       |" << std::endl;
+  std::cout << "    ";
+
   for (int i = 19; i <= 24; i++) {
-    if (i <= 9 || (board[i] == "x" || board[i] == "o")) {
-      if (i % 6 == 0) {
-        std::cout << "   " << board[i] << "   ";
-      } else {
-        std::cout << "   " << board[i] << "   |";
-      }
-    } else if (i > 9) {
-      if (i % 6 == 0) {
-        std::cout << "   " << board[i] << "  ";
-      } else {
-        std::cout << "   " << board[i] << "  |";
-      }
-    }
-    if (i%6 == 0) {
-      std::cout << std::endl;
-    }
+    this->dispBoardHelper(i, board[i]);
   }
-  std::cout <<"_______|_______|_______|_______|_______|_______" << std::endl;
-  std::cout <<"       |       |       |       |       |        " << std::endl;
+  std::cout << "    |_______|_______|_______|_______|_______|_______|" << std::endl;
+  std::cout << "    |       |       |       |       |       |       |" << std::endl;
+  std::cout << "    ";
+
   for (int i = 25; i <= 30; i++) {
-    if (i <= 9 || (board[i] == "x" || board[i] == "o")) {
-      if (i % 6 == 0) {
-        std::cout << "   " << board[i] << "   ";
-      } else {
-        std::cout << "   " << board[i] << "   |";
-      }
-    } else if (i > 9) {
-      if (i % 6 == 0) {
-        std::cout << "   " << board[i] << "  ";
-      } else {
-        std::cout << "   " << board[i] << "  |";
-      }
-    }
-    if (i%6 == 0) {
-      std::cout << std::endl;
-    }
+    this->dispBoardHelper(i, board[i]);
   }
-  std::cout <<"_______|_______|_______|_______|_______|_______" << std::endl;
-  std::cout <<"       |       |       |       |       |        " << std::endl;
+  std::cout << "    |_______|_______|_______|_______|_______|_______|" << std::endl;
+  std::cout << "    |       |       |       |       |       |       |" << std::endl;
+  std::cout << "    ";
+
   for (int i = 31; i <= 36; i++) {
-    if (i <= 9 || (board[i] == "x" || board[i] == "o")) {
-      if (i % 6 == 0) {
-        std::cout << "   " << board[i] << "   ";
-      } else {
-        std::cout << "   " << board[i] << "   |";
-      }
-    } else if (i > 9) {
-      if (i % 6 == 0) {
-        std::cout << "   " << board[i] << "  ";
-      } else {
-        std::cout << "   " << board[i] << "  |";
-      }
-    }
-    if (i%6 == 0) {
-      std::cout << std::endl;
-    }
+    this->dispBoardHelper(i, board[i]);
   }
-  std::cout <<"       |       |       |       |       |       " << std::endl;
+  std::cout << "    |_______|_______|_______|_______|_______|_______|" << std::endl;
 
 }
 
