@@ -4,6 +4,7 @@ Game::Game() {
   running = false;
   autosave = false;
   turns = 0;
+  this->previousWinner = nullptr;
 }
 
 void Game::setRunning(bool value) {
@@ -312,6 +313,7 @@ void Game::dispOutro() {
     if (this->autosave) {
       this->clearSave();
     }
+    this->previousWinner = nullptr;
   } else {
     this->changeRole();
     this->board.clear();
@@ -429,6 +431,8 @@ void Game::load() {
 }
 
 Game::~Game() {
-  delete [] playerList;
-  delete previousWinner;
+  if (this->turns > 0) {
+    delete [] playerList;
+    delete previousWinner;
+  }
 }
