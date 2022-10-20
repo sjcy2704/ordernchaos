@@ -429,4 +429,6 @@ void Game::load() {
 }
 
 Game::~Game() {
+  delete [] playerList;
+  delete previousWinner;
 }
